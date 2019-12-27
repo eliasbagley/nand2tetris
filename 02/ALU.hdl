@@ -7,7 +7,7 @@
  * The ALU (Arithmetic Logic Unit).
  * Computes one of the following functions:
  * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
- * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs,
  * according to 6 input bits denoted zx,nx,zy,ny,f,no.
  * In addition, the ALU computes two 1-bit outputs:
  * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
@@ -27,8 +27,8 @@
 // if (out < 0) set ng = 1
 
 CHIP ALU {
-    IN  
-        x[16], y[16],  // 16-bit inputs        
+    IN
+        x[16], y[16],  // 16-bit inputs
         zx, // zero the x input?
         nx, // negate the x input?
         zy, // zero the y input?
@@ -36,11 +36,34 @@ CHIP ALU {
         f,  // compute out = x + y (if 1) or x & y (if 0)
         no; // negate the out output?
 
-    OUT 
+    OUT
         out[16], // 16-bit output
         zr, // 1 if (out == 0), 0 otherwise
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    /* Process zx and nx flags */
+    Mux16(a=x, b=false, sel=zx, out=xZX);
+    Not16(in=xZX, out=xZXNX);
+    Mux16(a=xZX, b=xZXNX, sel=nx, out=xmod);
+
+    /* Process zy and ny flags */
+    Mux16(a=y, b=false, sel=zy, out=yZY);
+    Not16(in=yZY, out= yZYNY);
+    Mux16(a=yZY, b=yZYNY, sel=ny, out=ymod);
+
+    /* Process f flag */
+    Add16(a=xmod, b=ymod, out=xymodsum);
+    And16(a=xmod, b=ymod, out=xymodand);
+    Mux16(a=xymodand, b=xymodsum, sel=f, out=outmod);
+
+    /* Process no flag */
+    /* Just check msb of output to know if negative */
+    Not16(in=outmod, out=notoutmod);
+    Mux16(a=outmod, b=notoutmod, sel=no, out=finalout);
+    Mux16(a=outmod, b=notoutmod, sel=no, out=out, out[15]=ng);
+
+    /* Set zr */
+    Not16(in=finalout, out=finaloutnot);
+    IsAllOnes(a=finaloutnot, out=zr);
 }

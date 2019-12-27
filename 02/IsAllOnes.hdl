@@ -1,0 +1,23 @@
+CHIP IsAllOnes {
+  IN
+    a[16];
+  OUT
+    out;
+
+  PARTS:
+    And(a=a[0], b=a[1], out=tmp1);
+    And(a=a[2], b=tmp1, out=tmp2);
+    And(a=a[3], b=tmp2, out=tmp3);
+    And(a=a[4], b=tmp3, out=tmp4);
+    And(a=a[5], b=tmp4, out=tmp5);
+    And(a=a[6], b=tmp5, out=tmp6);
+    And(a=a[7], b=tmp6, out=tmp7);
+    And(a=a[8], b=tmp7, out=tmp8);
+    And(a=a[9], b=tmp8, out=tmp9);
+    And(a=a[10], b=tmp9, out=tmp10);
+    And(a=a[11], b=tmp10, out=tmp11);
+    And(a=a[12], b=tmp11, out=tmp12);
+    And(a=a[13], b=tmp12, out=tmp13);
+    And(a=a[14], b=tmp13, out=tmp14);
+    And(a=a[15], b=tmp14, out=out);
+}
