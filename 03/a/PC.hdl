@@ -16,5 +16,20 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Register(in=regIn, load=true, out=regOut, out=out);
+    Add16(a=regOut, b[0]=true, b[1..15]=false, out=incremented);
+
+    Mux8Way16(
+      a=regOut,     // 000 else
+      b=false,      // 001 reset
+      c=in,         // 010 load
+      d=false,      // 011 reset
+      e=incremented,// 100 inc
+      f=false,      // 101 reset
+      g=in,         // 110 load
+      h=false,      // 111 reset
+      sel[0]=reset,
+      sel[1]=load,
+      sel[2]=inc,
+      out=regIn);
 }
