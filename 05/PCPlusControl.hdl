@@ -2,7 +2,7 @@
 * Encapsulates the PC + jump control bits from the instruction, and output bits from the ALU.
 */
 CHIP PCPlusControl {
-  IN in[16],reset,j[3],zr,ng;
+  IN in[16],reset,j[3],zr,ng,cInstruction;
   OUT out[16];
 
   PARTS:
@@ -22,8 +22,9 @@ CHIP PCPlusControl {
     g=jle,
     h=true, // jmp
     sel=j,
-    out=load);
+    out=muxOut);
 
+  And(a=muxOut, b=cInstruction, out=load);
   Not(in=load, out=notLoad);
 
   PC(in=in, reset=reset, load=load, inc=notLoad, out=out);
