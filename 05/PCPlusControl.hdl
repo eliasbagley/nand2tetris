@@ -1,0 +1,30 @@
+/**
+* Encapsulates the PC + jump control bits from the instruction, and output bits from the ALU.
+*/
+CHIP PCPlusControl {
+  IN in[16],reset,j[3],zr,ng;
+  OUT out[16];
+
+  PARTS:
+  Not(in=zr, out=notZr);
+  Not(in=ng, out=notNg);
+
+  And(a=notZr, b=notNg, out=jgt);
+  Or(a=zr, b=ng, out=jle);
+
+  Mux8Way(
+    a=false, // no jump
+    b=jgt,
+    c=zr, // jeq
+    d=notNg, // jge
+    e=ng, // jlt
+    f=notZr, // jne
+    g=jle,
+    h=true, // jmp
+    sel=j,
+    out=load);
+
+  Not(in=load, out=notLoad);
+
+  PC(in=in, reset=reset, load=load, inc=notLoad, out=out);
+}
