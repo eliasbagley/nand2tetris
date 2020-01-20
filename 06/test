@@ -1,0 +1,11 @@
+#!/bin/sh
+
+make parser_test
+make code_test
+
+echo ""
+echo "--- Parser tests ---"
+./parser_test
+echo ""
+echo "--- Code tests ---"
+./code_test

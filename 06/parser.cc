@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstddef>
 
 
 std::vector<std::string> parse(std::string filename) {
@@ -16,41 +17,53 @@ std::vector<std::string> parse(std::string filename) {
 }
 
 bool isAInstruction(std::string instruction) {
-  return false;
+  return instruction[0] == '@';
 }
 bool isCInstruction(std::string instruction) {
   return !isAInstruction(instruction);
 }
 
-// [a bit, c bits, dest bits, jump bits]
-// throws if not a C instruction
-std::vector<std::string> getBits(std::string instruction) {
-  if (!isCInstruction(instruction)) {
-    throw "Must be a C instruction to decode bits";
+bool hasDest(std::string instruction) {
+  return !getDest(instruction).empty();
+}
+
+bool hasJump(std::string instruction) {
+  return !getJump(instruction).empty();
+}
+
+
+std::string getComp(std::string instruction) {
+  if (hasDest(instruction) && hasJump(instruction)) {
+      std::size_t compStart = instruction.find_first_of("=");
+      std::size_t jumpStart = instruction.find_first_of(";");
+      return instruction.substr(compStart+1, jumpStart - compStart -1);
+  } else if (hasDest(instruction)) {
+      std::size_t compStart = instruction.find_first_of("=");
+      return instruction.substr(compStart+1);
   }
 
-  std::vector<std::string> bits;
-
-  //TODO parse from actual instruction
-  bits.push_back("1");
-  bits.push_back("101010");
-  bits.push_back("111");
-  bits.push_back("101");
-  return bits;
+  std::size_t jumpStart = instruction.find_first_of(";");
+  return instruction.substr(0, jumpStart);
 }
 
-std::string getABit(std::vector<std::string> bits) {
-  return bits[0];
+
+std::string getDest(std::string instruction) {
+  std::size_t found = instruction.find_first_of("=");
+
+  if (found != std::string::npos) {
+    return instruction.substr(0, found);
+  }
+
+  return "";
 }
 
-std::string getCBits(std::vector<std::string> bits) {
-  return bits[1];
-}
 
-std::string getDestBits(std::vector<std::string> bits) {
-  return bits[2];
-}
+std::string getJump(std::string instruction) {
+  std::size_t found = instruction.find_first_of(";");
 
-std::string getJumpBits(std::vector<std::string> bits) {
-  return bits[3];
+  if (found != std::string::npos) {
+    return instruction.substr(found+1);
+  }
+
+  return "";
 }
