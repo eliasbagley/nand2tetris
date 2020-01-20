@@ -1,0 +1,39 @@
+#include "parser.h"
+#include <string>
+#include <iostream>
+#include <vector>
+
+
+bool testInstructionIsAInstruction() {
+  std::string instruction = "0111111111111111";
+  return isAInstruction(instruction);
+}
+
+bool testInstructionIsCInstruction() {
+  std::string instruction = "1111111111111111";
+  return isCInstruction(instruction);
+}
+
+bool testGetBits() {
+  std::string instruction = "111accccccdddjjj";
+  std::vector<std::string> bits = getBits(instruction);
+  return bits[0] == "a"
+    && bits[1] == "cccccc"
+    && bits[2] == "ddd"
+    && bits[3] == "jjj";
+}
+
+int main() {
+  std::cout << "testInstructionIsAInstruction: " << testInstructionIsAInstruction() << std::endl;
+  std::cout << "testInstructionIsCInstruction: " << testInstructionIsCInstruction() << std::endl;
+  std::cout << "testGetBits: " << testGetBits() << std::endl;
+  return 0;
+}
+
+std::string passOrFail(bool pass) {
+  if (pass) {
+    return "Pass";
+  } else {
+    return "Fail";
+  }
+}
